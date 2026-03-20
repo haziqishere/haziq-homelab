@@ -4,7 +4,7 @@ metadata:
   name: gpu-operator
   namespace: kube-system
 spec:
-  repo: https//helm.ngc.nvidia.com/nvidia
+  repo: https://helm.ngc.nvidia.com/nvidia
   chart: gpu-operator
   targetNamespace: gpu-operator
   valuesContent: |-
