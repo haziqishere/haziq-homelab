@@ -10,3 +10,7 @@ spec:
   valuesContent: |-
     operator:
       defaultRuntime: containerd
+    driver:
+      enabled: false  # Disable NVIDIA driver daemonset since there is error pulling image.
+                      # On main machine we already install nvidia open so this should'nt poses any issue
+      
