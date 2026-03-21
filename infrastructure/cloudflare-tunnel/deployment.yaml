@@ -19,6 +19,21 @@ spec:
             - tunnel
             - --no-autoupdate
             - run
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cloudflared
+              readOnly: true
+            - name: creds 
+              mountPath: /etc/cloudflared/creds
+              readOnly: true
+          volumes:
+            - name: config 
+              ConfigMap:
+                name: cloudflared-config
+            - name: creds
+              secret:
+                secretName: cloudflare-tunnel-token
+            
           env:
             - name: TUNNEL_TOKEN
               valueFrom:
