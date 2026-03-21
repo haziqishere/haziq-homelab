@@ -17,7 +17,7 @@ spec:
     spec:
       initContainers:
         - name: restore-world
-          image: amazon/aws-cli
+          image: python:3.11-slim
           env:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
@@ -32,23 +32,24 @@ spec:
             - name: AWS_DEFAULT_REGION
               value: "ap-southeast-1"
           command:
-            - /bin/sh
-            - -c
-            - |
-              if [ ! -d /data/world ]; then
-                echo "No world found. Restoring from S3..."
-                LATEST=$(aws s3 ls s3://kroni-survival-backups-secure/ \
-                  | grep "minecraft-world-backup" \
-                  | sort \
-                  | tail -n 1 \
-                  | awk '{print $4}')
-                echo "Latest backup: $LATEST"
-                aws s3 cp s3://kroni-survival-backups-secure/$LATEST /tmp/world.tar.gz
-                tar -xzf /tmp/world.tar.gz -C /data
-                echo "World restored successfully"
-              else
-                echo "World already exists, skipping restore"
-              fi
+                - /bin/sh
+                - -c
+                - |
+                  pip install awscli -q
+                  if [ ! -d /data/world ]; then
+                    echo "No world found. Restoring from S3..."
+                    LATEST=$(aws s3 ls s3://kroni-survival-backups-secure/ \
+                      | grep "minecraft-world-backup" \
+                      | sort \
+                      | tail -n 1 \
+                      | awk '{print $4}')
+                    echo "Latest backup: $LATEST"
+                    aws s3 cp s3://kroni-survival-backups-secure/$LATEST /tmp/world.tar.gz
+                    tar -xzf /tmp/world.tar.gz -C /data
+                    echo "World restored successfully"
+                  else
+                    echo "World already exists, skipping restore"
+                  fi
           volumeMounts:
             - name: data
               mountPath: /data
