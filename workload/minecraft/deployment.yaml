@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft-server
+  namespace: minecraft
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: minecraft
+  template:
+    metadata:
+      labels:
+        app: minecraft
+    spec:
+      initContainers:
+        - name: restore-world
+          image: amazon/aws-cli
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-creds
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-creds
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_DEFAULT_REGION
+              value: "ap-southeast-1"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              if [ ! -d /data/world ]; then
+                echo "No world found. Restoring from S3..."
+                LATEST=$(aws s3 ls s3://kroni-survival-backups-secure/ \
+                  | grep "minecraft-world-backup" \
+                  | sort \
+                  | tail -n 1 \
+                  | awk '{print $4}')
+                echo "Latest backup: $LATEST"
+                aws s3 cp s3://kroni-survival-backups-secure/$LATEST /tmp/world.tar.gz
+                tar -xzf /tmp/world.tar.gz -C /data
+                echo "World restored successfully"
+              else
+                echo "World already exists, skipping restore"
+              fi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+        - name: minecraft
+          image: haziqishere/minecraft-custom:main-5ec373a
+          env:
+            - name: EULA
+              value: "TRUE"
+            - name: TYPE
+              value: "PAPER"
+            - name: VERSION
+              value: "LATEST"
+            - name: MEMORY
+              value: "1G"
+            - name: DIFFICULTY
+              value: "hard"
+            - name: MAX_PLAYERS
+              value: "10"
+            - name: MOTD
+              value: "§6✦ §l§cKRONI SMP§r §6✦\\n§7Survival • Hard Mode • Paper 1.21"
+            - name: ONLINE_MODE
+              value: "true"
+            - name: ENABLE_RCON
+              value: "true"
+            - name: RCON_PASSWORD
+              value: "minecraft"
+            - name: ICON
+              value: "https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2F64x64-pixel-art-from-online-image-not-mine-v0-nv84yfxfwxoe1.png%3Fwidth%3D512%26format%3Dpng%26auto%3Dwebp%26s%3D0785af099a6068d91594e102a6f527673255733c"
+            - name: OVERRIDE_ICON
+              value: "TRUE"
+            - name: SERVER_NAME
+              value: "KroniSMP"
+          ports:
+            - containerPort: 25565
+              name: minecraft
+            - containerPort: 25575
+              name: rcon
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            exec:
+              command:
+                - mc-health
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - mc-health
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: minecraft-data
