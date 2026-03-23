@@ -6,6 +6,7 @@ metadata:
 data:
   config.yaml: |
     tunnel: 6c3da374-4317-4210-b505-ab56c6049416
+    credentials-file: /etc/cloudflared/creds/credentials.json
     warp-routing:
       enabled: true
     ingress:
