@@ -4,4 +4,4 @@ kind: Kustomization
 namespace: kubeflow
 
 resources:
-  - https://github.com/kubeflow/pipelines/manifests/kustomize/env/platform-agnostic?ref=2.3.0
+  - https://github.com/kubeflow/pipelines/manifests/kustomize/env/platform-agnostic?ref=2.15.0
