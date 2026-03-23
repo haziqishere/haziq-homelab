@@ -1,3 +1,4 @@
 .CLAUDE/*
 secrets
 secrets/**
+bootstrap/apply-cloudflare-config.sh
