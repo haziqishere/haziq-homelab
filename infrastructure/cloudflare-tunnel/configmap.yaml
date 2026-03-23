@@ -5,10 +5,12 @@ metadata:
   namespace: cloudflare
 data:
   config.yaml: |
-    tunnel: 6c3da374-4317-4210-b505-ab56c6049416
-    credentials-file: /etc/cloudflared/creds/credentials.json
+    # NOTE: This config is ignored for token-based tunnels
+    # Tunnel config is managed via Cloudflare API
+    # See bootstrap/apply-cloudflare-config.sh
     warp-routing:
       enabled: true
+    # Below will get ignore
     ingress:
       - hostname: minecraft.haziqhakimi.online
         service: tcp://minecraft-service.minecraft.svc.cluster.local:25565

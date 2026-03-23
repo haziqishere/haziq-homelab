@@ -19,17 +19,13 @@ spec:
           args:
             - tunnel
             - --no-autoupdate
-            - --config
-            - /etc/cloudflared/config.yaml
             - run
-          volumeMounts:
-            - name: config
-              mountPath: /etc/cloudflared/config.yaml
-              subPath: config.yaml
-              readOnly: true
-            - name: creds
-              mountPath: /etc/cloudflared/creds
-              readOnly: true
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare-tunnel-token
+                  key: token
           resources:
             requests:
               memory: "64Mi"
@@ -37,10 +33,3 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "100m"
-      volumes:
-        - name: config
-          configMap:
-            name: cloudflared-config
-        - name: creds
-          secret:
-            secretName: cloudflare-tunnel-credentials
