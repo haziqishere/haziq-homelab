@@ -5,5 +5,10 @@ metadata:
   namespace: cloudflare
 data:
   config.yaml: |
+    tunnel: 6c3da374-4317-4210-b505-ab56c6049416
     warp-routing:
       enabled: true
+    ingress:
+      - hostname: minecraft.haziqhakimi.online
+        service: tcp://minecraft-service.minecraft.svc.cluster.local:25565
+      - service: http_status:404
