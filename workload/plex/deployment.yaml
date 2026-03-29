@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex
+  namespace: plex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: haziq-homelab
+      containers:
+        - name: plex
+          image: plexinc/pms-docker:latest
+          env:
+            - name: TZ
+              value: "Asia/Kuala_Lumpur"
+            - name: PLEX_CLAIM
+              valueFrom:
+                secretKeyRef:
+                  name: plex-secret
+                  key: PLEX_CLAIM
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: "compute,video,utility"
+          ports:
+            - containerPort: 32400
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /data
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: plex-config-pvc
+        - name: media
+          persistentVolumeClaim:
+            claimName: plex-media-pvc
