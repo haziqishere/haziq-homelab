@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prefect-postgresql
+  namespace: prefect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prefect-postgresql
+  template:
+    metadata:
+      labels:
+        app: prefect-postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:15
+          env:
+            - name: POSTGRES_USER
+              value: prefect
+            - name: POSTGRES_PASSWORD
+              value: prefect
+            - name: POSTGRES_DB
+              value: prefect
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: prefect-postgresql-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prefect-postgresql
+  namespace: prefect
+spec:
+  selector:
+    app: prefect-postgresql
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prefect-server
+  namespace: prefect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prefect-server
+  template:
+    metadata:
+      labels:
+        app: prefect-server
+    spec:
+      containers:
+        - name: server
+          image: prefecthq/prefect:3-python3.12
+          command: ["prefect", "server", "start", "--host", "0.0.0.0"]
+          env:
+            - name: PREFECT_SERVER_DATABASE_CONNECTION_URL
+              value: "postgresql+asyncpg://prefect:prefect@prefect-postgresql.prefect.svc.cluster.local:5432/prefect"
+          ports:
+            - containerPort: 4200
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prefect-server
+  namespace: prefect
+spec:
+  selector:
+    app: prefect-server
+  ports:
+    - port: 4200
+      targetPort: 4200
