@@ -1,0 +1,28 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: loki
+  namespace: kube-system
+spec:
+  repo: https://grafana.github.io/helm-charts
+  chart: loki
+  targetNamespace: observability
+  valuesContent: |-
+    deploymentMode: SingleBinary
+    loki:
+      auth_enabled: false
+      commonConfig:
+        replication_factor: 1
+      storage:
+        type: filesystem
+    singleBinary:
+      replicas: 1
+      nodeSelector:
+        kubernetes.io/hostname: raspberrypi
+    # Disable distributed components
+    backend:
+      replicas: 0
+    read:
+      replicas: 0
+    write:
+      replicas: 0
