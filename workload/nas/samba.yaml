@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: samba
+  namespace: nas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: samba
+  template:
+    metadata:
+      labels:
+        app: samba
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: haziq-homelab
+      containers:
+        - name: samba
+          image: dperson/samba:latest
+          env:
+            - name: TZ
+              value: "Asia/Kuala_Lumpur"
+            - name: USER
+              value: "haziq;haziq"        # username;password — change password
+            - name: SHARE
+              value: "media;/media;yes;no;no;haziq"
+          ports:
+            - containerPort: 445
+              hostPort: 445
+              protocol: TCP
+            - containerPort: 139
+              hostPort: 139
+              protocol: TCP
+          volumeMounts:
+            - name: media
+              mountPath: /media
+      volumes:
+        - name: media
+          hostPath:
+            path: /mnt/obj-storage/media
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: samba
+  namespace: nas
+spec:
+  type: NodePort
+  selector:
+    app: samba
+  ports:
+    - name: smb
+      port: 445
+      targetPort: 445
+      nodePort: 30445
