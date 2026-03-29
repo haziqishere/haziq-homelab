@@ -7,3 +7,4 @@ resources:
 
 patches:
   - path: repo-server-patch.yaml
+  - path: crds-patch.yaml
