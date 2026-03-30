@@ -9,6 +9,9 @@ spec:
   targetNamespace: spark-operator
   valuesContent: |-
     controller:
+      namespaces:
+        - default
+        - spark
       resources:
         requests:
           memory: "128Mi"
