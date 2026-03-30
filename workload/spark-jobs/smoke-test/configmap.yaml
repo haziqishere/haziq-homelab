@@ -6,7 +6,9 @@ metadata:
 data:
   smoke_test.py: |
     import subprocess
-    subprocess.run(["pip", "install", "kagglehub", "pandas", "numpy", "-q"], check=True)
+    subprocess.run(["pip", "install", "kagglehub", "pandas", "numpy", "-q", "--target", "/tmp/pypackages"], check=True)
+    import sys
+    sys.path.insert(0, "/tmp/pypackages")
 
     import pandas as pd
     import kagglehub
