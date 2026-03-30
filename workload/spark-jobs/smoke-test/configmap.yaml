@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: smoke-test-script
-  namespace: spark
+  namespace: default
 data:
   smoke_test.py: |
     import subprocess

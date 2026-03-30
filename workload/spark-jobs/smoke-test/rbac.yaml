@@ -2,13 +2,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: spark-workload-service-account
-  namespace: spark
+  namespace: default
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: spark-kubernetes-role
-  namespace: spark
+  namespace: default
 rules:
   - apiGroups: [""]
     resources: ["pods", "services", "configmaps"]
@@ -21,7 +21,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: spark-role-binding
-  namespace: spark
+  namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -29,4 +29,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: spark-workload-service-account
-    namespace: spark
+    namespace: default
