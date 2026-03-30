@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smoke-test-script
+  namespace: spark
+data:
+  smoke_test.py: |
+    import subprocess
+    subprocess.run(["pip", "install", "kagglehub", "pandas", "numpy", "-q"], check=True)
+
+    import pandas as pd
+    import kagglehub
+    from kagglehub import KaggleDatasetAdapter
+    from pyspark.sql import SparkSession
+
+    spark = SparkSession.builder \
+        .appName("kaggle-spark-smoke-test") \
+        .getOrCreate()
+
+    print("Loading dataset from Kaggle...")
+    df_pandas: pd.DataFrame = kagglehub.load_dataset(
+        KaggleDatasetAdapter.PANDAS,
+        "meharshanali/student-dropout-prediction-dataset",
+        "student_dropout_dataset_v3.csv",
+    )
+    print(f"Pandas shape: {df_pandas.shape}")
+
+    print("Converting to Spark DataFrame...")
+    df_spark = spark.createDataFrame(df_pandas)
+    df_spark.printSchema()
+
+    print(f"Total rows: {df_spark.count()}")
+    df_spark.groupBy("Dropout").count().show()
+    df_spark.describe().show()
+
+    spark.stop()
+    print("Done.")
