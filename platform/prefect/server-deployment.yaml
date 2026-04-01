@@ -67,6 +67,8 @@ spec:
           env:
             - name: PREFECT_SERVER_DATABASE_CONNECTION_URL
               value: "postgresql+asyncpg://prefect:prefect@prefect-postgresql.prefect.svc.cluster.local:5432/prefect"
+            - name: PREFECT_UI_API_URL
+              value: "http://prefect.haziqhakimi.online:30080/api"
           ports:
             - containerPort: 4200
           resources:
