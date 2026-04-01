@@ -6,5 +6,4 @@ resources:
   - postgresql-pvc.yaml
   - server-deployment.yaml
   - worker-deployment.yaml
-  - rbac.yaml
   - ingress.yaml
