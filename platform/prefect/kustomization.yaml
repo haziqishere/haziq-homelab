@@ -7,3 +7,4 @@ resources:
   - server-deployment.yaml
   - worker-deployment.yaml
   - rbac.yaml
+  - ingress.yaml
