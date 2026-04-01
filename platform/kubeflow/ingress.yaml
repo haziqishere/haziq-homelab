@@ -1,18 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: argocd
-  namespace: argocd
+  name: kubeflow
+  namespace: kubeflow
 spec:
   ingressClassName: traefik
   rules:
-    - host: argocd.haziqhakimi.online
+    - host: kubeflow.haziqhakimi.online
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: argocd-server
+                name: ml-pipeline-ui
                 port:
                   number: 80
