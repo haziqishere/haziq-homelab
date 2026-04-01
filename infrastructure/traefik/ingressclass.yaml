@@ -8,3 +8,5 @@ metadata:
   name: traefik
 spec:
   controller: traefik.io/ingress-controller
+
+# we'll need to apply manually via kubectl apply -f infrastructure/traefik/ingressclass.yaml
