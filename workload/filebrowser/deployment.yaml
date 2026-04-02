@@ -24,20 +24,8 @@ spec:
             - sh
             - -c
             - |
-              rm -f /database/filebrowser.db
-              filebrowser -c /config/settings.json config init
-              filebrowser -c /config/settings.json users add ${FB_USERNAME} ${FB_PASSWORD} --perm.admin
-          env:
-            - name: FB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: filebrowser-secret
-                  key: username
-            - name: FB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: filebrowser-secret
-                  key: password
+              echo "=== Existing users in DB ===" && \
+              filebrowser -d /database/filebrowser.db users ls || echo "No DB found"
           volumeMounts:
             - name: data
               mountPath: /database
