@@ -1,0 +1,10 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: csi-driver-nfs
+  namespace: kube-system
+spec:
+  repo: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+  chart: csi-driver-nfs
+  version: v4.9.0
+  targetNamespace: kube-system
