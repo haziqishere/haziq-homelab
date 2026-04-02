@@ -1,4 +1,21 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: filebrowser-nas
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  csi:
+    driver: nfs.csi.k8s.io
+    volumeHandle: nfs-server.nas.svc.cluster.local##
+    volumeAttributes:
+      server: nfs-server.nas.svc.cluster.local
+      share: /
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: filebrowser-nas
@@ -6,10 +23,11 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: nfs-csi
+  storageClassName: ""
+  volumeName: filebrowser-nas
   resources:
     requests:
-      storage: 1Mi  # nominal — actual size is the full NFS share
+      storage: 100Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
