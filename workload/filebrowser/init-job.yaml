@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: filebrowser-init
+  namespace: common
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: filebrowser-data
+        - name: config
+          emptyDir: {}
+      initContainers:
+        - name: write-config
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              echo '{"port":80,"baseURL":"","address":"","log":"stdout","database":"/database/filebrowser.db","root":"/srv"}' > /config/settings.json
+          volumeMounts:
+            - name: config
+              mountPath: /config
+      containers:
+        - name: init
+          image: filebrowser/filebrowser:latest
+          command:
+            - sh
+            - -c
+            - |
+              filebrowser -c /config/settings.json config init && \
+              filebrowser -c /config/settings.json users add admin admin --perm.admin
+          volumeMounts:
+            - name: db
+              mountPath: /database
+            - name: config
+              mountPath: /config
