@@ -31,6 +31,7 @@ spec:
             - sh
             - -c
             - |
+              rm -f /database/filebrowser.db && \
               filebrowser -c /config/settings.json config init && \
               filebrowser -c /config/settings.json users add admin admin --perm.admin
           volumeMounts:

@@ -17,6 +17,30 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: raspberrypi
+      initContainers:
+        - name: init-db
+          image: filebrowser/filebrowser:latest
+          command:
+            - sh
+            - -c
+            - |
+              rm -f /database/filebrowser.db
+              filebrowser -c /config/settings.json config init
+              filebrowser -c /config/settings.json users add ${FB_USERNAME} ${FB_PASSWORD} --perm.admin
+          env:
+            - name: FB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: filebrowser-secret
+                  key: username
+            - name: FB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: filebrowser-secret
+                  key: password
+          volumeMounts:
+            - name: data
+              mountPath: /database
       containers:
         - name: filebrowser
           image: filebrowser/filebrowser:latest
