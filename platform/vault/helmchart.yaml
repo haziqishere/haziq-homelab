@@ -1,0 +1,33 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: vault
+  namespace: kube-system
+spec:
+  repo: https://helm.releases.hashicorp.com
+  chart: vault
+  version: 0.29.1
+  targetNamespace: vault
+  createNamespace: true
+  valuesContent: |-
+    server:
+      standalone:
+        enabled: true
+        config: |
+          ui = true
+
+          listener "tcp" {
+            tls_disable = true
+            address     = "[::]:8200"
+          }
+
+          storage "raft" {
+            path = "/vault/data"
+          }
+      dataStorage:
+        enabled: true
+        size: 5Gi
+    ui:
+      enabled: true
+    injector:
+      enabled: false
