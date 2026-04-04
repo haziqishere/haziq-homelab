@@ -8,3 +8,4 @@ resources:
   - pv.yaml
   - deployment.yaml
   - services.yaml
+  - ingress.yaml
