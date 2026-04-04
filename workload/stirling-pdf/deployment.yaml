@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stirling-pdf-server
+  namespace: common
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: stirling-pdf
+  template:
+    metadata:
+      labels:
+        app: stirling-pdf
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: stirling-pdf
+          image: stirlingtools/stirling-pdf:latest-fat
+          env:
+            - name: LANGS
+              value: "en_GB"
+            - name: SECURITY_ENABLELOGIN
+              value: "true"
+          ports:
+            - containerPort: 8080
+              name: stirling-pdf-port
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/tessdata
+              subPath: tessdata
+            - name: data
+              mountPath: /configs
+              subPath: configs
+            - name: data
+              mountPath: /logs
+              subPath: logs
+            - name: data
+              mountPath: /customFiles
+              subPath: customFiles
+            - name: data
+              mountPath: /pipeline
+              subPath: pipeline
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: stirling-pdf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stirling-pdf
+  namespace: common
+spec:
+  selector:
+    app: stirling-pdf
+  ports:
+    - port: 8080
+      targetPort: stirling-pdf-port
