@@ -8,6 +8,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
   hostPath:
     path: /mnt/obj-storage/media
   nodeAffinity:
@@ -27,6 +28,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: ""
+  volumeName: plex-media-pv
   resources:
     requests:
       storage: 355Gi
@@ -41,6 +44,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
   hostPath:
     path: /mnt/obj-storage/plex-config
   nodeAffinity:
@@ -60,6 +64,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: ""
+  volumeName: plex-config-pv
   resources:
     requests:
       storage: 10Gi
