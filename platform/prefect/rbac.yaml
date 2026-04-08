@@ -1,0 +1,49 @@
+## General workload SA
+# The intention is we wanted to scope all workload to be in default namespace
+# Hence I will mantain a dedicated SA at this namespace
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prefect-pipeline-service-account
+  namespace: prefect
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prefect-pipeline-general-role
+rules:
+  # Permissions to create and manage jobs in any namespace
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+
+  # Permissions to get and list pods in any namespace (for kubectl cp and logs)
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+
+  # Permissions to execute commands in pods (for kubectl cp)
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create", "get"]
+
+  # Permissions to read pod logs
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prefect-pipeline-general-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prefect-pipeline-general-role
+subjects:
+  - kind: ServiceAccount
+    name: prefect-pipeline-service-account
+    namespace: default
+
+# TODO: Create a role and role binding to have access to minecraft namespace
