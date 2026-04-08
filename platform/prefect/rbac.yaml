@@ -1,17 +1,17 @@
 ## General workload SA
 # The intention is we wanted to scope all workload to be in default namespace
 # Hence I will mantain a dedicated SA at this namespace
----
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: prefect-pipeline-service-account
-  namespace: prefect
+  namespace: default
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
   name: prefect-pipeline-general-role
+  namespace: default
 rules:
   # Permissions to create and manage jobs in any namespace
   - apiGroups: ["batch"]
@@ -37,6 +37,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: prefect-pipeline-general-role-binding
+  namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
