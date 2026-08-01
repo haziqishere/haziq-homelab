@@ -53,6 +53,8 @@ spec:
             runtimeClassName: nvidia
           containers:
             main:
+              image:
+                tag: v2.6.3-cuda
               resources:
                 limits:
                   nvidia.com/gpu: 1
