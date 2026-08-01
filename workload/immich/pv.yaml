@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: immich-library-pv
+spec:
+  capacity:
+    storage: 150Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /mnt/obj-storage/immich-library # HDD storage
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - haziq-homelab
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: immich-media-pv
+spec:
+  capacity:
+    storage: 355Gi
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  # immich -> NFS CSI -> NAS pod
+  csi:
+    driver: nfs.csi.k8s.io
+    volumeHandle: nfs-server.nas.svc.cluster.local##immich-media
+    volumeAttributes:
+      server: nfs-server.nas.svc.cluster.local
+      share: /
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-media-pvc
+  namespace: immich
+spec:
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: ""
+  volumeName: immich-media-pv
+  resources:
+    requests:
+      storage: 355Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-library-pvc
+  namespace: immich
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+  volumeName: immich-library-pv
+  resources:
+    requests:
+      storage: 150Gi

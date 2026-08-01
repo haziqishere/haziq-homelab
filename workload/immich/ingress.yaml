@@ -1,0 +1,48 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: immich-stripprefix
+  namespace: immich
+spec:
+  stripPrefix:
+    prefixes:
+      - /immich
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: immich-external
+  namespace: immich
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: immich.haziqhakimi.online
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: immich-server
+                port:
+                  number: 2283
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: immich-internal
+  namespace: immich
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: immich-immich-stripprefix@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          - path: /immich
+            pathType: Prefix
+            backend:
+              service:
+                name: immich-server
+                port:
+                  number: 2283

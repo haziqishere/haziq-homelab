@@ -1,0 +1,56 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: immich
+  namespace: kube-system
+spec:
+  repo: https://immich-app.github.io/immich-charts
+  chart: immich
+  targetNamespace: immich
+  valuesContent: |-
+    immich:
+      persistence:
+        library:
+          existingClaim: immich-library-pvc
+
+    server:
+      nodeSelector:
+        kubernetes.io/hostname: haziq-homelab
+      extraVolumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: immich-media-pvc
+      extraVolumeMounts:
+        - name: media
+          mountPath: /mnt/media
+          readOnly: true
+
+    machine-learning:
+      enabled: true
+      nodeSelector:
+        kubernetes.io/hostname: haziq-homelab
+      runtimeClassName: nvidia
+      resources:
+        limits:
+          nvidia.com/gpu: 1
+      persistence:
+        cache:
+          storageClass: local-path
+          size: 10Gi
+
+    postgresql:
+      enabled: true
+      primary:
+        nodeSelector:
+          kubernetes.io/hostname: haziq-homelab
+        persistence:
+          storageClass: local-path 
+          size: 20Gi
+
+    redis:
+      enabled: true
+      master:
+        nodeSelector:
+          kubernetes.io/hostname: haziq-homelab
+        persistence:
+          enabled: false
