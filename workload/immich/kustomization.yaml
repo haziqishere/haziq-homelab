@@ -6,5 +6,6 @@ namespace: immich
 resources:
   - namespace.yaml
   - pv.yaml
+  - postgres.yaml
   - helmchart.yaml
   - ingress.yaml

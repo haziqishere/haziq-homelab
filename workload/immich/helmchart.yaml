@@ -39,13 +39,16 @@ spec:
           size: 10Gi
 
     postgresql:
-      enabled: true
-      primary:
-        nodeSelector:
-          kubernetes.io/hostname: haziq-homelab
-        persistence:
-          storageClass: local-path 
-          size: 20Gi
+      enabled: false
+
+    immich:
+      configuration:
+        database:
+          host: immich-postgres.immich.svc.cluster.local
+          port: 5432
+          username: immich
+          password: immich
+          database: immich
 
     redis:
       enabled: true
