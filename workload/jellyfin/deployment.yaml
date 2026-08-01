@@ -17,6 +17,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: haziq-homelab
+      runtimeClassName: nvidia  # use NVIDIA runtime for GPU support
       containers:
         - name: jellyfin
           image: jellyfin/jellyfin:latest
