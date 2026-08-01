@@ -1,0 +1,19 @@
+# immich cannot resolves <IP>/immich because it always assume its running in root /
+# temporarily use NodePort to access immich until I can figure out how to make it work with Ingress
+# TODO: Fix above so we can standardize on Ingress for all workloads instead of using NodePort for immich
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-server-nodeport
+  namespace: immich
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/controller: main
+    app.kubernetes.io/instance: immich
+    app.kubernetes.io/name: server
+  ports:
+    - port: 2283
+      targetPort: 2283
+      nodePort: 30283
