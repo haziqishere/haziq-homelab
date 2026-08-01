@@ -47,10 +47,15 @@ spec:
       enabled: true
       nodeSelector:
         kubernetes.io/hostname: haziq-homelab
-      runtimeClassName: nvidia
-      resources:
-        limits:
-          nvidia.com/gpu: 1
+      controllers:
+        main:
+          pod:
+            runtimeClassName: nvidia
+          containers:
+            main:
+              resources:
+                limits:
+                  nvidia.com/gpu: 1
       persistence:
         cache:
           storageClass: local-path
