@@ -19,6 +19,9 @@ spec:
           username: immich
           password: immich
           database: immich
+        redis:
+          host: immich-redis.immich.svc.cluster.local
+          port: 6379
 
     server:
       nodeSelector:
@@ -45,10 +48,3 @@ spec:
           storageClass: local-path
           size: 10Gi
 
-    redis:
-      enabled: true
-      master:
-        nodeSelector:
-          kubernetes.io/hostname: haziq-homelab
-        persistence:
-          enabled: false
