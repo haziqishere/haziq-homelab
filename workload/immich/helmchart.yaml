@@ -45,9 +45,6 @@ spec:
           storageClass: local-path
           size: 10Gi
 
-    postgresql:
-      enabled: false
-
     redis:
       enabled: true
       master:
