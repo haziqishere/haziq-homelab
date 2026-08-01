@@ -31,20 +31,17 @@ spec:
           type: emptyDir
 
     server:
-      controllers:
-        main:
-          containers:
-            main:
-              extraVolumes:
-                - name: media
-                  persistentVolumeClaim:
-                    claimName: immich-media-pvc
-              extraVolumeMounts:
-                - name: media
-                  mountPath: /mnt/media
-                  readOnly: true
       nodeSelector:
         kubernetes.io/hostname: haziq-homelab
+      persistence:
+        media:
+          enabled: true
+          existingClaim: immich-media-pvc
+          advancedMounts:
+            main:
+              main:
+                - path: /mnt/media
+                  readOnly: true
 
     machine-learning:
       enabled: true
