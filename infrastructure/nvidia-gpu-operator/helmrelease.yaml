@@ -15,6 +15,6 @@ spec:
                       # On main machine we already install nvidia open so this should'nt poses any issue
     devicePlugin:
       config:
-        name: time-slicing-config
+        name: time-slicing-config # support vGPU time slicing for multiple workloads
         default: any
       
