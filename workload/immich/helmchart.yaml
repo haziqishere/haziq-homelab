@@ -12,6 +12,13 @@ spec:
       persistence:
         library:
           existingClaim: immich-library-pvc
+      configuration:
+        database:
+          host: immich-postgres.immich.svc.cluster.local
+          port: 5432
+          username: immich
+          password: immich
+          database: immich
 
     server:
       nodeSelector:
@@ -40,15 +47,6 @@ spec:
 
     postgresql:
       enabled: false
-
-    immich:
-      configuration:
-        database:
-          host: immich-postgres.immich.svc.cluster.local
-          port: 5432
-          username: immich
-          password: immich
-          database: immich
 
     redis:
       enabled: true
