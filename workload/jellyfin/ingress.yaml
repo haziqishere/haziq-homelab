@@ -1,7 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: jellyfin-stripprefix
+  namespace: jellyfin
+spec:
+  stripPrefix:
+    prefixes:
+      - /jellyfin
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: jellyfin
+  name: jellyfin-external
   namespace: jellyfin
 spec:
   ingressClassName: traefik
@@ -10,6 +20,26 @@ spec:
       http:
         paths:
           - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jellyfin
+                port:
+                  number: 8096
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin-internal
+  namespace: jellyfin
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: jellyfin-jellyfin-stripprefix@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          - path: /jellyfin
             pathType: Prefix
             backend:
               service:
