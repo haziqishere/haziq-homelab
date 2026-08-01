@@ -12,20 +12,17 @@ spec:
       persistence:
         library:
           existingClaim: immich-library-pvc
-      configuration:
-        database:
-          host: immich-postgres.immich.svc.cluster.local
-          port: 5432
-          username: immich
-          password: immich
-          database: immich
-        redis:
-          host: immich-redis.immich.svc.cluster.local
-          port: 6379
-
     server:
       nodeSelector:
         kubernetes.io/hostname: haziq-homelab
+      env:
+        DB_HOSTNAME: immich-postgres.immich.svc.cluster.local
+        DB_PORT: "5432"
+        DB_USERNAME: immich
+        DB_PASSWORD: immich
+        DB_DATABASE_NAME: immich
+        REDIS_HOSTNAME: immich-redis.immich.svc.cluster.local
+        REDIS_PORT: "6379"
       extraVolumes:
         - name: media
           persistentVolumeClaim:
