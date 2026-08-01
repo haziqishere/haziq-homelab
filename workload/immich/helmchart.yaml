@@ -58,6 +58,11 @@ spec:
               resources:
                 limits:
                   nvidia.com/gpu: 1
+              probes:
+                startup:
+                  spec:
+                    failureThreshold: 60
+                    periodSeconds: 10
       persistence:
         cache:
           storageClass: local-path
