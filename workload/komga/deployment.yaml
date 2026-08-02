@@ -17,10 +17,17 @@ spec:
         - name: komga
           image: gotson/komga:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 25600
           env:
-            - name: KOMGA_CONTEXTPATH
+            - name: SERVER_SERVLET_CONTEXT_PATH
               value: /komga
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
           volumeMounts:
             - name: config
               mountPath: /config
@@ -58,5 +65,5 @@ spec:
   selector:
     app: komga
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 25600
+      targetPort: 25600
