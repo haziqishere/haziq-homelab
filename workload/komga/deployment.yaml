@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: komga
+  namespace: komga
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: komga
+  template:
+    metadata:
+      labels:
+        app: komga
+    spec:
+      containers:
+        - name: komga
+          image: gotson/komga:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KOMGA_CONTEXTPATH
+              value: /komga
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: books
+              mountPath: /data
+              readOnly: true
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: komga-config-pvc
+        - name: books
+          persistentVolumeClaim:
+            claimName: komga-books-pvc
+            readOnly: true
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: komga-config-pvc
+  namespace: komga
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: komga
+  namespace: komga
+spec:
+  selector:
+    app: komga
+  ports:
+    - port: 8080
+      targetPort: 8080
