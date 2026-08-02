@@ -1,10 +1,12 @@
 # haziq-homelab
 
-A GitOps-managed Kubernetes homelab built on k3s, purpose-built for data/ML workloads and personal projects.
+A GitOps-managed Kubernetes homelab built on k3s, purpose-built for data/ML workloads and personal media.
 
 ---
 
 ## Hardware
+
+### Control Plane
 
 | Component | Spec |
 |-----------|------|
@@ -16,13 +18,28 @@ A GitOps-managed Kubernetes homelab built on k3s, purpose-built for data/ML work
 | OS | Arch Linux |
 | Network | Tailscale VPN + Wake-on-LAN |
 
+### Worker Node (Raspberry PI)
+
+| Component | Spec |
+|-----------|------|
+| RAM | 4GB |
+| OS | RapberryOS |
+| Role | k3s agent — Persistent light-weight load |
+
+### Worker Node (Gaming PC)
+
+| Component | Spec |
+|-----------|------|
+| GPU | NVIDIA RTX 3060 12GB |
+| Memory | 32GB |
+| OS | Arch Linux |
+| Role | k3s agent — GPU/Memory-heavy ML workloads |
+
 ---
 
 ## Architecture
 
 All cluster state is managed via ArgoCD — the only manual steps are one-time bootstrapping (ArgoCD install + secrets). After that, every change is via git and PR.
-
-![Homelab Architecture](docs/homelab-architecture.png)
 
 ```
 MacBook (write manifests + run bootstrap)
@@ -32,28 +49,43 @@ MacBook (write manifests + run bootstrap)
         └── kubectl (over Tailscale) → k3s directly
 ```
 
+### Access
 
-| Service | Access Method |
-|---------|--------------|
-| Minecraft | Cloudflare Tunnel (public) |
-| ArgoCD | Tailscale only |
-| Kubeflow | Tailscale only |
-| Grafana | Tailscale only |
+| Service | External | Internal |
+|---------|----------|----------|
+| Jellyfin | `https://jellyfin.haziqhakimi.online` (Cloudflare Tunnel) | Traefik ingress `/jellyfin` |
+| Immich | `https://immich.haziqhakimi.online` (Cloudflare Tunnel) | NodePort `:30283` |
+| ArgoCD | — | Tailscale only |
+| Grafana | — | Tailscale only |
+| Kubeflow | — | Tailscale only |
+| Filebrowser | — | Tailscale only |
+| Komga | — | Tailscale only |
+| Minecraft | Cloudflare Tunnel (public) | — |
 
 ---
 
 ## Running Applications
 
-![ArgoCD Applications](docs/argocd-screenshoot.png)
-
-| Application | Namespace | Status | Path |
-|-------------|-----------|--------|------|
-| argocd | argocd | Healthy / Synced | `infrastructure/argocd` |
-| cloudflare-tunnel | cloudflare | Healthy / Synced | `infrastructure/cloudflare-tunnel` |
-| gpu-operator | gpu-operator | Healthy / Synced | `infrastructure/nvidia-gpu-operator` |
-| kubeflow-crds | kubeflow | Healthy / OutOfSync | `platform/kubeflow` |
-| kubeflow-pipelines | kubeflow | Healthy / OutOfSync | `platform/kubeflow/kubeflow-pipeline` |
-| minecraft | minecraft | Healthy / Synced | `workload/minecraft` |
+| Application | Namespace | Path |
+|-------------|-----------|------|
+| argocd | argocd | `infrastructure/argocd` |
+| cloudflare-tunnel | cloudflare | `infrastructure/cloudflare-tunnel` |
+| gpu-operator | gpu-operator | `infrastructure/nvidia-gpu-operator` |
+| nfs-csi | kube-system | `infrastructure/nfs-csi` |
+| traefik | kube-system | `infrastructure/traefik` |
+| kubeflow-crds | kubeflow | `platform/kubeflow` |
+| kubeflow-pipelines | kubeflow | `platform/kubeflow/kubeflow-pipeline` |
+| spark-operator | spark | `platform/spark-operator` |
+| prefect | prefect | `platform/prefect` |
+| vault | vault | `platform/vault` |
+| nas (nfs-server) | nas | `workload/nas` |
+| minecraft | minecraft | `workload/minecraft` |
+| jellyfin | jellyfin | `workload/jellyfin` |
+| immich | immich | `workload/immich` |
+| filebrowser | filebrowser | `workload/filebrowser` |
+| plex | plex | `workload/plex` |
+| stirling-pdf | stirling-pdf | `workload/stirling-pdf` |
+| komga | komga | `workload/komga` |
 
 ---
 
@@ -68,14 +100,26 @@ haziq-homelab/
 ├── infrastructure/             # Core cluster components (ArgoCD managed)
 │   ├── argocd/
 │   ├── cloudflare-tunnel/
-│   └── nvidia-gpu-operator/
+│   ├── nfs-csi/
+│   ├── nvidia-gpu-operator/
+│   └── traefik/
 │
 ├── platform/                   # Data/ML platform operators
+│   ├── kubeflow/
+│   ├── prefect/
 │   ├── spark-operator/
-│   └── kubeflow/
+│   └── vault/
 │
 ├── workload/                   # Application workloads
-│   └── minecraft/
+│   ├── filebrowser/
+│   ├── immich/
+│   ├── jellyfin/
+│   ├── komga/
+│   ├── minecraft/
+│   ├── nas/
+│   ├── plex/
+│   ├── stirling-pdf/
+│   └── spark-jobs/
 │
 ├── secrets/                    # Templates only — no real values committed
 └── docs/
@@ -100,25 +144,33 @@ bash bootstrap/apply-secrets.sh
 
 ## Roadmap
 
-### Phase 1 — Core Platform 
+### Phase 1 — Core Platform
 - [x] k3s single-node control plane
+- [x] k3s multi-node (gaming PC as agent)
 - [x] kubectl access from MacBook over Tailscale
 - [x] ArgoCD (GitOps)
 - [x] Cloudflare Tunnel
-- [x] NVIDIA GPU operator (GTX 1060 / CUDA)
+- [x] NVIDIA GPU operator (GTX 1060 / CUDA + time-slicing)
+- [x] NFS CSI driver
 
-### Phase 2 — Data Platform 
+### Phase 2 — Data Platform
 - [x] Kubeflow Pipelines (lightweight install)
 - [x] Spark Operator
-- [ ] Minecraft server (public via Cloudflare Tunnel)
+- [x] Prefect (self-hosted)
+- [x] Vault
 
-### Phase 3 — Expand (When 16GB RAM arrives)
-- [ ] Prefect (self-hosted)
-- [ ] SeaweedFS (local object storage on `/mnt/obj-storage`)
-- [ ] Raspberry Pi 5 as k3s worker node
+### Phase 3 — Media & Personal Workloads
+- [x] Minecraft (public via Cloudflare Tunnel)
+- [x] Jellyfin (GPU transcoding via NVENC)
+- [x] Plex
+- [x] Immich (photo management, ML on GPU)
+- [x] Filebrowser
+- [x] Stirling PDF
+- [x] Komga (manga/comic/book server)
+- [ ] TODO: Add mechanism to backup photos to S3
 
 ### Phase 4 — Observability
-- [ ] Grafana + Prometheus
+- [x] Grafana + Prometheus
 - [ ] OpenTelemetry collector
 - [ ] Loki for log aggregation
 
