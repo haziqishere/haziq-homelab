@@ -13,6 +13,8 @@ spec:
       labels:
         app: komga
     spec:
+      nodeSelector: # explicit node selection to main to verify if it's raspberry pi issue
+        kubernetes.io/hostname: haziq-homelab
       containers:
         - name: komga
           image: gotson/komga:latest
