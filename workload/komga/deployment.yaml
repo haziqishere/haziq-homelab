@@ -28,7 +28,7 @@ spec:
             limits:
               cpu: "1"
               memory: 2Gi
-          volumeMounts:xw
+          volumeMounts:
             - name: config
               mountPath: /config
             - name: books
