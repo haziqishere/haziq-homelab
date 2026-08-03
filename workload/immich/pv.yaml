@@ -4,7 +4,7 @@ metadata:
   name: immich-library-pv
 spec:
   capacity:
-    storage: 150Gi
+    storage: 300Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
@@ -64,4 +64,4 @@ spec:
   volumeName: immich-library-pv
   resources:
     requests:
-      storage: 150Gi
+      storage: 300Gi
