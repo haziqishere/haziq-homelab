@@ -23,7 +23,7 @@ spec:
               value: /komga
           resources:
             requests:
-              cpu: 100m
+              cpu: 1000m
               memory: 1Gi
             limits:
               cpu: "1"
