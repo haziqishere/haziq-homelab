@@ -41,6 +41,8 @@ A GitOps-managed Kubernetes homelab built on k3s, purpose-built for data/ML work
 
 All cluster state is managed via ArgoCD — the only manual steps are one-time bootstrapping (ArgoCD install + secrets). After that, every change is via git and PR.
 
+![Homelab Architecture](docs/homelab-architecture.png)
+
 ```
 MacBook (write manifests + run bootstrap)
         │
@@ -65,6 +67,8 @@ MacBook (write manifests + run bootstrap)
 ---
 
 ## Running Applications
+
+![ArgoCD Applications](docs/argocd-screenshoot.png)
 
 | Application | Namespace | Path |
 |-------------|-----------|------|
