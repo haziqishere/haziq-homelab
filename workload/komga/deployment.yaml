@@ -23,12 +23,12 @@ spec:
               value: /komga
           resources:
             requests:
-              cpu: 1000m
-              memory: 1Gi
+              cpu: "1500m"
+              memory: 2Gi
             limits:
               cpu: "1"
               memory: 2Gi
-          volumeMounts:
+          volumeMounts:xw
             - name: config
               mountPath: /config
             - name: books
