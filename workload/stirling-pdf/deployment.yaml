@@ -4,7 +4,7 @@ metadata:
   name: stirling-pdf-server
   namespace: common
 spec:
-  replicas: 1
+  replicas: 0
   strategy:
     type: Recreate
   selector:
