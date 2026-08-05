@@ -18,9 +18,6 @@ spec:
           image: gotson/komga:latest
           ports:
             - containerPort: 25600
-          env:
-            - name: SERVER_SERVLET_CONTEXT_PATH
-              value: /komga
           resources:
             requests:
               cpu: "1"
