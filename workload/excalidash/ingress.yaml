@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: excalidash
+  namespace: excalidash
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: excalidash.haziqhakimi.online
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80

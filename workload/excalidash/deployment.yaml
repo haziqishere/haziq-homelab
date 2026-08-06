@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: excalidash
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: excalidash-backend
+  template:
+    metadata:
+      labels:
+        app: excalidash-backend
+    spec:
+      containers:
+        - name: backend
+          image: zimengxiong/excalidash-backend:latest
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: DATABASE_PROVIDER
+              value: sqlite
+            - name: DATABASE_URL
+              value: "file:/app/prisma/dev.db"
+            - name: PORT
+              value: "8000"
+            - name: NODE_ENV
+              value: production
+            - name: AUTH_MODE
+              value: local
+            - name: TRUST_PROXY
+              value: "false"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: excalidash-secrets
+                  key: JWT_SECRET
+            - name: CSRF_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: excalidash-secrets
+                  key: CSRF_SECRET
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "400Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: data
+              mountPath: /app/prisma
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: excalidash-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: excalidash
+spec:
+  selector:
+    app: excalidash-backend
+  ports:
+    - port: 8000
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: excalidash
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: excalidash-frontend
+  template:
+    metadata:
+      labels:
+        app: excalidash-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: zimengxiong/excalidash-frontend:latest
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: excalidash
+spec:
+  selector:
+    app: excalidash-frontend
+  ports:
+    - port: 80
+      targetPort: http
