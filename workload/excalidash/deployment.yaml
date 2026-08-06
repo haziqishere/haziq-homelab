@@ -36,6 +36,8 @@ spec:
               value: "false"
             - name: FRONTEND_URL
               value: "https://excalidash.haziqhakimi.online"
+            - name: ENFORCE_HTTPS_REDIRECT
+              value: "false"
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
