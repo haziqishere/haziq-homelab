@@ -34,6 +34,8 @@ spec:
               value: local
             - name: TRUST_PROXY
               value: "false"
+            - name: FRONTEND_URL
+              value: "https://excalidash.haziqhakimi.online"
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
