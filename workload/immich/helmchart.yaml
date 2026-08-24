@@ -31,6 +31,11 @@ spec:
           type: emptyDir
 
     server:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/immich-app/immich-server
+            tag: v3.1.0
       nodeSelector:
         kubernetes.io/hostname: haziq-homelab
       persistence:
