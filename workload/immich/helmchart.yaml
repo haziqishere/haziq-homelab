@@ -12,6 +12,9 @@ spec:
       main:
         containers:
           main:
+            image:
+              repository: ghcr.io/immich-app/immich-server
+              tag: v3.1.0
             env:
               DB_HOSTNAME: immich-postgres.immich.svc.cluster.local
               DB_PORT: "5432"
@@ -31,11 +34,6 @@ spec:
           type: emptyDir
 
     server:
-      containers:
-        main:
-          image:
-            repository: ghcr.io/immich-app/immich-server
-            tag: v3.1.0
       nodeSelector:
         kubernetes.io/hostname: haziq-homelab
       persistence:
