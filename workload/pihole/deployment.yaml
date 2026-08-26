@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  namespace: pihole
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      # spread replicas across nodes, best-effort (not hard requirement, so
+      # a single-node resource crunch doesn't leave a pod stuck Pending)
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: pihole
+                topologyKey: kubernetes.io/hostname
+      initContainers:
+        # each replica is stateless (emptyDir) - seed adlists.list from the
+        # configmap so gravity has a source list to build from on first boot
+        - name: seed-adlists
+          image: busybox:1.36
+          command: ["sh", "-c", "cp /config/adlists.list /etc/pihole/adlists.list"]
+          volumeMounts:
+            - name: lists
+              mountPath: /config
+            - name: etc-pihole
+              mountPath: /etc/pihole
+      containers:
+        - name: pihole
+          image: pihole/pihole:latest
+          env:
+            - name: TZ
+              value: "Asia/Kuala_Lumpur"
+            - name: FTLCONF_dns_listeningMode
+              value: "ALL"
+            - name: FTLCONF_webserver_api_password
+              valueFrom:
+                secretKeyRef:
+                  name: pihole-secret
+                  key: password
+          ports:
+            - containerPort: 53
+              protocol: TCP
+              name: dns-tcp
+            - containerPort: 53
+              protocol: UDP
+              name: dns-udp
+            - containerPort: 80
+              name: http
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          resources:
+            requests:
+              memory: "200Mi"
+              cpu: "100m"
+            limits:
+              memory: "500Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: etc-pihole
+              mountPath: /etc/pihole
+            - name: etc-dnsmasq
+              mountPath: /etc/dnsmasq.d
+      volumes:
+        - name: lists
+          configMap:
+            name: pihole-lists
+        - name: etc-pihole
+          emptyDir: {}
+        - name: etc-dnsmasq
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole-web
+  namespace: pihole
+spec:
+  type: ClusterIP
+  selector:
+    app: pihole
+  ports:
+    - port: 80
+      targetPort: http

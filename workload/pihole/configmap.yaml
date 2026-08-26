@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-lists
+  namespace: pihole
+data:
+  # seeded into /etc/pihole/adlists.list on pod start (see initContainer in
+  # deployment.yaml) - gravity picks this up on first run since no gravity.db
+  # exists yet in the (ephemeral) emptyDir. add more urls, one per line.
+  adlists.list: |
+    https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
