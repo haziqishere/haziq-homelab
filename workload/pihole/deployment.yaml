@@ -89,6 +89,10 @@ metadata:
   namespace: pihole
 spec:
   type: ClusterIP
+  # pihole v6 web UI sessions are per-pod (no shared store across the 2
+  # stateless replicas) - without this, login on pod A gets lost when the
+  # next request round-robins to pod B, bouncing back to /login
+  sessionAffinity: ClientIP
   selector:
     app: pihole
   ports:
