@@ -1,0 +1,36 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: kube-prometheus-stack
+  namespace: kube-system
+spec:
+  repo: https://prometheus-community.github.io/helm-charts
+  chart: kube-prometheus-stack
+  targetNamespace: observability
+  valuesContent: |-
+    prometheusOperator:
+      nodeSelector:
+        kubernetes.io/hostname: raspberrypi
+    prometheus:
+      prometheusSpec:
+        nodeSelector:
+          kubernetes.io/hostname: raspberrypi
+        retention: 7d
+        resources:
+          requests:
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+    grafana:
+      nodeSelector:
+        kubernetes.io/hostname: raspberrypi
+      persistence:
+        enabled: false
+    alertmanager:
+      enabled: false
+    kube-state-metrics:
+      nodeSelector:
+        kubernetes.io/hostname: raspberrypi
+    prometheus-node-exporter:
+      tolerations:
+        - operator: Exists
