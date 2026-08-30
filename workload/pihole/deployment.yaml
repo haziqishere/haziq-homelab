@@ -87,11 +87,17 @@ kind: Service
 metadata:
   name: pihole-web
   namespace: pihole
+  annotations:
+    # pihole v6 web UI sessions are per-pod (no shared store across the 2
+    # stateless replicas). Traefik's kubernetes ingress provider talks
+    # directly to pod endpoints and ignores Service sessionAffinity, so
+    # stickiness has to be set here instead - otherwise login on pod A gets
+    # lost when the next request round-robins to pod B, bouncing to /login
+    traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
 spec:
   type: ClusterIP
-  # pihole v6 web UI sessions are per-pod (no shared store across the 2
-  # stateless replicas) - without this, login on pod A gets lost when the
-  # next request round-robins to pod B, bouncing back to /login
+  # belt-and-suspenders for any traffic that hits the ClusterIP directly
+  # (bypassing traefik, e.g. from in-cluster clients)
   sessionAffinity: ClientIP
   selector:
     app: pihole
