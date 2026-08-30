@@ -4,8 +4,6 @@ metadata:
   name: komga
   namespace: komga
 spec:
-  nodeSelector:
-    kubernetes.io/hostname: haziq-homelab
   replicas: 1
   strategy:
     type: Recreate
@@ -17,6 +15,8 @@ spec:
       labels:
         app: komga
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: haziq-homelab
       containers:
         - name: komga
           image: gotson/komga:latest
