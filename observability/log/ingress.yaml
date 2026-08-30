@@ -1,18 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: grafana
-  namespace: observability
+  name: kibana
+  namespace: efk
 spec:
   ingressClassName: traefik
   rules:
-    - host: grafana.haziqhakimi.online
+    - host: kibana.haziqhakimi.online
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: kube-prometheus-stack-grafana
+                name: kibana-kibana
                 port:
-                  number: 80
+                  number: 5601

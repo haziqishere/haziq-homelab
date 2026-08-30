@@ -1,0 +1,28 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: fluent-bit
+  namespace: kube-system
+spec:
+  repo: https://fluent.github.io/helm-charts
+  chart: fluent-bit
+  targetNamespace: efk
+  valuesContent: |-
+    tolerations:
+      - operator: Exists
+    resources:
+      requests:
+        memory: 64Mi
+      limits:
+        memory: 128Mi
+    config:
+      outputs: |-
+        [OUTPUT]
+            Name            es
+            Match           kube.*
+            Host            elasticsearch-master
+            Port            9200
+            Logstash_Format On
+            Logstash_Prefix fluent-bit
+            Retry_Limit     False
+            Suppress_Type_Name On

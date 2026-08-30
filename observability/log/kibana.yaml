@@ -1,0 +1,18 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: kibana
+  namespace: kube-system
+spec:
+  repo: https://helm.elastic.co
+  chart: kibana
+  targetNamespace: efk
+  valuesContent: |-
+    elasticsearchHosts: "http://elasticsearch-master:9200"
+    nodeSelector:
+      kubernetes.io/hostname: raspberrypi
+    resources:
+      requests:
+        memory: 256Mi
+      limits:
+        memory: 512Mi
