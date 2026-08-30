@@ -12,13 +12,13 @@ spec:
     minimumMasterNodes: 1
     antiAffinity: soft
     nodeSelector:
-      kubernetes.io/hostname: raspberrypi
+      kubernetes.io/hostname: haziq-homelab
     esJavaOpts: "-Xms256m -Xmx256m"
     resources:
       requests:
-        memory: 256Mi
-      limits:
         memory: 512Mi
+      limits:
+        memory: 1Gi
     persistence:
       enabled: false
     esConfig:
