@@ -9,6 +9,7 @@ spec:
   targetNamespace: efk
   valuesContent: |-
     protocol: http
+    createCert: false
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: soft
