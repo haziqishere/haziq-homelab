@@ -8,6 +8,7 @@ spec:
   chart: elasticsearch
   targetNamespace: efk
   valuesContent: |-
+    protocol: http
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: soft
