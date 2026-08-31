@@ -40,7 +40,7 @@ spec:
             command:
               - /bin/bash
               - -c
-              - "ps aux | grep 'prefect worker' | grep -v grep"
+              - "for f in /proc/[0-9]*/cmdline; do tr '\\0' ' ' < \"$f\"; echo; done | grep -q 'prefect worker'"
           initialDelaySeconds: 120
           periodSeconds: 300
           failureThreshold: 3

@@ -23,8 +23,22 @@ spec:
       requests:
         memory: 64Mi
       limits:
-        memory: 128Mi
+        memory: 256Mi
     config:
+      inputs: |-
+        [INPUT]
+            Name tail
+            Path /var/log/containers/*.log
+            multiline.parser docker, cri
+            Tag kube.*
+            Mem_Buf_Limit 50MB
+            Skip_Long_Lines On
+
+        [INPUT]
+            Name systemd
+            Tag host.*
+            Systemd_Filter _SYSTEMD_UNIT=kubelet.service
+            Read_From_Tail On
       outputs: |-
         [OUTPUT]
             Name            es
