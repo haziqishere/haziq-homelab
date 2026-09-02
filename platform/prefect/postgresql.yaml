@@ -1,0 +1,64 @@
+## Deployment ----------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prefect-postgresql
+  namespace: prefect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prefect-postgresql
+  template:
+    metadata:
+      labels:
+        app: prefect-postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:15
+          env:
+            - name: POSTGRES_USER
+              value: prefect
+            - name: POSTGRES_PASSWORD
+              value: prefect
+            - name: POSTGRES_DB
+              value: prefect
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: prefect-postgresql-data
+
+## Services ----------------
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prefect-postgresql
+  namespace: prefect
+spec:
+  selector:
+    app: prefect-postgresql
+  ports:
+    - port: 5432
+      targetPort: 5432
+      
+## PVC -----------------------
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prefect-postgresql-data
+  namespace: prefect
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: local-path

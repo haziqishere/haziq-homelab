@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - rbac.yaml
-  - postgresql-pvc.yaml
+  - postgresql.yaml
   - server-deployment.yaml
   - worker-deployment.yaml
   - ingress.yaml
