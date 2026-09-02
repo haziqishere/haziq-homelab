@@ -1,0 +1,45 @@
+## Standalone Redis, deployed as a plain manifest (not the helm chart's bundled
+## subchart) so it looks like an external endpoint to prefect-server, the same
+## way production points backgroundServices at AWS MemoryDB.
+## Deployment ----------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prefect-redis
+  namespace: prefect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prefect-redis
+  template:
+    metadata:
+      labels:
+        app: prefect-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+
+## Services ----------------
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prefect-redis
+  namespace: prefect
+spec:
+  selector:
+    app: prefect-redis
+  ports:
+    - port: 6379
+      targetPort: 6379

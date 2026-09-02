@@ -1,46 +1,79 @@
-## Deployment ----------------
-apiVersion: apps/v1
-kind: Deployment
+## Prefect server, installed via the official prefect-server Helm chart
+## through k3s' built-in helm-controller (see platform/vault/helmchart.yaml for
+## the same pattern). Namespace + Service naming (prefect-server:4200) are kept
+## identical to the previous plain-Deployment manifest, so ingress.yaml and
+## worker-deployment.yaml need no changes.
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
 metadata:
   name: prefect-server
-  namespace: prefect
+  namespace: kube-system
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: prefect-server
-  template:
-    metadata:
-      labels:
-        app: prefect-server
-    spec:
-      containers:
-        - name: server
-          image: prefecthq/prefect:3-python3.12
-          command: ["prefect", "server", "start", "--host", "0.0.0.0"]
-          env:
-            - name: PREFECT_SERVER_DATABASE_CONNECTION_URL
-              value: "postgresql+asyncpg://prefect:prefect@prefect-postgresql.prefect.svc.cluster.local:5432/prefect"
-            - name: PREFECT_UI_API_URL
-              value: "http://prefect.haziqhakimi.online/api"
-          ports:
-            - containerPort: 4200
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "100m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
+  repo: https://prefecthq.github.io/prefect-helm
+  chart: prefect-server
+  version: 2026.8.25171537
+  targetNamespace: prefect
+  createNamespace: false
+  valuesContent: |-
+    fullnameOverride: prefect-server
+
+    server:
+      # -- api server replicas, tune as needed
+      replicaCount: 2
+      uiConfig:
+        prefectUiApiUrl: "http://prefect.haziqhakimi.online/api"
+
+    backgroundServices:
+      # scheduler/automations/etc run as their own Deployment instead of
+      # sharing the api server pod, so each can scale independently
+      runAsSeparateDeployment: true
+      # -- background-services replicas, tune as needed. NOTE: a `helm upgrade`
+      # (i.e. any change to this HelmChart's spec) resets the Deployment back
+      # to this value, temporarily overriding whatever the HPA below scaled to.
+      replicaCount: 2
+      messaging:
+        redis:
+          # points at platform/prefect/redis.yaml instead of the chart's
+          # bundled redis subchart, to mirror connecting to an external
+          # Redis endpoint (e.g. AWS MemoryDB in production)
+          host: prefect-redis.prefect.svc.cluster.local
+          port: 6379
+
+    # bundled redis subchart stays off since backgroundServices.messaging.redis
+    # points at our own external-style redis.yaml
+    redis:
+      enabled: false
+
+    # bundled postgresql subchart stays off, we run our own Postgres
+    # (see postgresql.yaml) and just point the chart at it
+    postgresql:
+      enabled: false
+    secret:
+      username: prefect
+      password: prefect
+      host: prefect-postgresql.prefect.svc.cluster.local
+      port: "5432"
+      database: prefect
 ---
-apiVersion: v1
-kind: Service
+## Horizontal scaling for background-services. The chart itself only ships an
+## HPA for the api server (server.autoscaling), so this targets the
+## background-services Deployment the chart creates directly.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
 metadata:
-  name: prefect-server
+  name: prefect-server-background-services
   namespace: prefect
 spec:
-  selector:
-    app: prefect-server
-  ports:
-    - port: 4200
-      targetPort: 4200
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: prefect-server-background-services
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 75
