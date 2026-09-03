@@ -10,6 +10,8 @@ spec:
     metadata:
       labels: { app: kube2iam }
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: haziq-homelab
       serviceAccountName: kube2iam
       hostNetwork: true
       containers:
