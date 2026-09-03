@@ -1,4 +1,14 @@
+## Namespaces for prefect componetn
 apiVersion: v1
 kind: Namespace
 metadata:
   name: prefect
+---
+## Namespaces for prefect workloads
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  annotations:
+    iam.amazonaws.com/allowed-roles: |
+      ["arn:aws:iam::658061044018:role/service-account-role"]
