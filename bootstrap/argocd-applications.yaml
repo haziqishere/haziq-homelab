@@ -1,0 +1,398 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: infrastructure/argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudflare-tunnel
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: infrastructure/cloudflare-tunnel
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cloudflare
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gpu-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: infrastructure/nvidia-gpu-operator
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gpu-operator
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nfs-csi
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: infrastructure/nfs-csi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: infrastructure/traefik
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube2iam
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: infrastructure/kube2iam
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubeflow-crds
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: platform/kubeflow
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubeflow
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubeflow-pipelines
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: platform/kubeflow/kubeflow-pipeline
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubeflow
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: spark-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: platform/spark-operator
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: spark
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prefect
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: platform/prefect
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prefect
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: platform/vault
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nas
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: workload/nas
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nas
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minecraft
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: workload/minecraft
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: minecraft
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jellyfin
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: workload/jellyfin
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: jellyfin
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: immich
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: workload/immich
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: immich
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: filebrowser
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: workload/filebrowser
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: filebrowser
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: plex
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: workload/plex
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: plex
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: stirling-pdf
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: workload/stirling-pdf
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: stirling-pdf
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: komga
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/haziqishere/haziq-homelab.git
+    targetRevision: main
+    path: workload/komga
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: komga
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
