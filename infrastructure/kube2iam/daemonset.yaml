@@ -11,6 +11,10 @@ spec:
       labels: { app: kube2iam }
     spec:
       nodeSelector:
+        # NOTE: This is a hardcoded node selector.
+        # other node like raspberrypi has disk pressure and keep restarting.
+        # since all k8s job only runs on haziq-homelab for now, we set affinity to only
+        # run on haziq-homelab
         kubernetes.io/hostname: haziq-homelab
       serviceAccountName: kube2iam
       hostNetwork: true
