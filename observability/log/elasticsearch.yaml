@@ -22,7 +22,7 @@ spec:
         cpu: 10m
       limits:
         memory: 2Gi
-        cpu: 100m
+        cpu: 500m
     persistence:
       enabled: false
     esConfig:
