@@ -24,9 +24,11 @@ spec:
                     - raspberrypi
     resources:
       requests:
-        memory: 64Mi
+        cpu: 5m
+        memory: 512Mi
       limits:
-        memory: 256Mi
+        cpu: 50m
+        memory: 1Gi
     config:
       inputs: |-
         [INPUT]
