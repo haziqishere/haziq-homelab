@@ -25,6 +25,7 @@ spec:
             - "--host-ip=$(HOST_IP)"
             - "--node=$(NODE_NAME)"
             - "--iptables=true"
+            - "--host-interface=cni0" # specific for k3s routing, k8s will use diffrent interface
             - "--namespace-restrictions=true"
             - "--base-role-arn=arn:aws:iam::658061044018:role/"
           env:
