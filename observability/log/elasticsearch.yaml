@@ -18,9 +18,11 @@ spec:
     esJavaOpts: "-Xms256m -Xmx256m"
     resources:
       requests:
-        memory: 512Mi
-      limits:
         memory: 1Gi
+        cpu: 10m
+      limits:
+        memory: 2Gi
+        cpu: 100m
     persistence:
       enabled: false
     esConfig:
