@@ -92,6 +92,9 @@ data:
               type: pihole
               url: http://pihole-web.pihole.svc.cluster.local
               version: 6
+              # = pihole-secret/password (web password). Don't use a UI-generated
+              # app password: pihole pods use emptyDir, so it exists in one pod only
+              # and is lost on restart.
               key: "{{HOMEPAGE_VAR_PIHOLE_KEY}}"
               fields: ["queries", "blocked", "blocked_percent", "gravity"]
     - Games:
@@ -122,7 +125,8 @@ data:
               method: GET
               refreshInterval: 300000
               headers:
-                X-Emby-Token: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
+                # Jellyfin 10.11+/12 rejects the legacy X-Emby-Token header
+                Authorization: 'MediaBrowser Token="{{HOMEPAGE_VAR_JELLYFIN_KEY}}"'
               mappings:
                 - field: MovieCount
                   label: Movies
