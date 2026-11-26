@@ -14,7 +14,7 @@ spec:
           main:
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: v3.1.0
+              tag: v3.4.2
             env:
               DB_HOSTNAME: immich-postgres.immich.svc.cluster.local
               DB_PORT: "5432"
