@@ -16,9 +16,10 @@ spec:
         app: homepage
       annotations:
         # bump to force a rollout after editing configmap.yaml
-        homepage.io/config-rev: "1"
+        homepage.io/config-rev: "2"
     spec:
-      automountServiceAccountToken: false
+      serviceAccountName: homepage
+      automountServiceAccountToken: true # kubernetes widget reads node metrics
       containers:
         - name: homepage
           image: ghcr.io/gethomepage/homepage:v2.8.0
@@ -29,6 +30,12 @@ spec:
             # required since v1.0 - requests with any other Host header are rejected
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: "www.haziqhakimi.online,haziqhakimi.online"
+          # HOMEPAGE_VAR_* keys, referenced in configmap as {{HOMEPAGE_VAR_X}}.
+          # Created manually (not in git) - see README secrets table.
+          envFrom:
+            - secretRef:
+                name: homepage-secrets
+                optional: true
           resources:
             requests:
               memory: "128Mi"

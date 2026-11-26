@@ -5,27 +5,105 @@ metadata:
   namespace: homepage
 data:
   # PUBLIC page (www.haziqhakimi.online via Cloudflare Tunnel, no auth).
-  # Do NOT add service widgets that need API keys/passwords - homepage proxies
-  # them server-side, so anyone hitting the page gets that widget's data.
+  # Before adding a widget that uses an API key, check the widget's proxy in
+  # gethomepage/homepage src/widgets/<type>/: every endpoint in its `mappings`
+  # can be called by any visitor through /api/services/proxy, and the raw JSON
+  # response reaches their browser (field filtering is display-only).
+  #   - jellyfin native widget: exposes Sessions (viewer IPs) + Pause/Unpause -> use customapi instead
+  #   - cloudflared widget: exposes connector origin_ip (home public IP) -> link only
+  #   - pihole: fixed stats/summary call only -> OK
   settings.yaml: |
     title: Haziq's Homelab
     description: Self-hosted services running on k3s
+    favicon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/homepage.png
     theme: dark
     color: slate
-    headerStyle: clean
+    background:
+      image: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
+      blur: sm
+      saturate: 60
+      brightness: 50
+      opacity: 60
+    cardBlur: md
+    headerStyle: boxed
+    statusStyle: dot
+    useEqualHeights: true
     hideVersion: true
+    # order here = order on the page
     layout:
-      Apps:
+      Dev:
         style: row
         columns: 4
+        icon: mdi-code-braces
       Monitoring:
         style: row
-        columns: 4
+        columns: 3
+        icon: mdi-chart-line
       Games:
         style: row
-        columns: 4
+        columns: 3
+        icon: mdi-minecraft
+      Personal Apps:
+        style: row
+        columns: 5
+        icon: mdi-account-heart
+      Cloud:
+        style: row
+        columns: 2
+        icon: mdi-cloud
   services.yaml: |
-    - Apps:
+    - Dev:
+        - Argo CD:
+            icon: argo-cd.png
+            href: https://argocd.haziqhakimi.online
+            description: GitOps deployments
+            siteMonitor: http://argocd-server.argocd.svc.cluster.local:80
+        - Prefect:
+            icon: https://cdn.simpleicons.org/prefect/ffffff
+            href: https://prefect.haziqhakimi.online
+            description: Workflow orchestration
+            siteMonitor: http://prefect-server.prefect.svc.cluster.local:4200
+        - Kibana:
+            icon: kibana.png
+            href: https://kibana.haziqhakimi.online
+            description: Cluster logs
+            siteMonitor: http://kibana-kibana.efk.svc.cluster.local:5601
+        - Excalidash:
+            icon: excalidraw.png
+            href: https://excalidash.haziqhakimi.online
+            description: Whiteboard
+            siteMonitor: http://frontend.excalidash.svc.cluster.local:80
+    - Monitoring:
+        - Grafana:
+            icon: grafana.png
+            href: https://grafana.haziqhakimi.online
+            description: Metrics dashboards
+            siteMonitor: http://kube-prometheus-stack-grafana.observability.svc.cluster.local:80
+        - Uptime Kuma:
+            icon: uptime-kuma.png
+            href: https://kuma.haziqhakimi.online
+            description: Service uptime
+            siteMonitor: http://uptime-kuma.uptime-kuma.svc.cluster.local:3001
+        - Pi-hole:
+            icon: pi-hole.png
+            href: https://pihole.haziqhakimi.online/admin
+            description: Network ad blocking
+            widget:
+              type: pihole
+              url: http://pihole-web.pihole.svc.cluster.local
+              version: 6
+              key: "{{HOMEPAGE_VAR_PIHOLE_KEY}}"
+              fields: ["queries", "blocked", "blocked_percent", "gravity"]
+    - Games:
+        - Kroni SMP:
+            icon: minecraft.png
+            description: minecraft.haziqhakimi.online
+            widget:
+              # server list ping only - no RCON/credentials involved
+              type: minecraft
+              url: udp://minecraft-service.minecraft.svc.cluster.local:25565
+              fields: ["status", "players", "version"]
+    - Personal Apps:
         - Immich:
             icon: immich.png
             href: https://immich.haziqhakimi.online
@@ -36,6 +114,25 @@ data:
             href: https://jellyfin.haziqhakimi.online
             description: Media streaming
             siteMonitor: http://jellyfin.jellyfin.svc.cluster.local:8096
+            # customapi = homepage only ever calls this one URL (library counts).
+            # Native jellyfin widget would expose sessions + pause controls publicly.
+            widget:
+              type: customapi
+              url: http://jellyfin.jellyfin.svc.cluster.local:8096/Items/Counts
+              method: GET
+              refreshInterval: 300000
+              headers:
+                X-Emby-Token: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
+              mappings:
+                - field: MovieCount
+                  label: Movies
+                  format: number
+                - field: SeriesCount
+                  label: Series
+                  format: number
+                - field: EpisodeCount
+                  label: Episodes
+                  format: number
         - Komga:
             icon: komga.png
             href: https://komga.haziqhakimi.online
@@ -51,37 +148,33 @@ data:
             href: https://stirling-pdf.haziqhakimi.online
             description: PDF tools
             siteMonitor: http://stirling-pdf.common.svc.cluster.local:8080
-        - Excalidash:
-            icon: excalidraw.png
-            href: https://excalidash.haziqhakimi.online
-            description: Whiteboard
-            siteMonitor: http://frontend.excalidash.svc.cluster.local:80
-    - Monitoring:
-        - Uptime Kuma:
-            icon: uptime-kuma.png
-            href: https://kuma.haziqhakimi.online
-            description: Service uptime
-            siteMonitor: http://uptime-kuma.uptime-kuma.svc.cluster.local:3001
-        - Grafana:
-            icon: grafana.png
-            href: https://grafana.haziqhakimi.online
-            description: Metrics dashboards
-            siteMonitor: http://kube-prometheus-stack-grafana.observability.svc.cluster.local:80
-    - Games:
-        - Kroni SMP:
-            icon: minecraft.png
-            description: minecraft.haziqhakimi.online
-            widget:
-              # server list ping only - no RCON/credentials involved
-              type: minecraft
-              url: udp://minecraft-service.minecraft.svc.cluster.local:25565
-              fields: ["status", "players", "version"]
+    - Cloud:
+        - Cloudflare Zero Trust:
+            icon: cloudflare-zero-trust.png
+            href: https://one.dash.cloudflare.com
+            description: Tunnel + public hostnames for *.haziqhakimi.online
+        - AWS:
+            icon: aws.png
+            href: https://ap-southeast-1.console.aws.amazon.com/console/home?region=ap-southeast-1
+            description: S3 backups (ap-southeast-1)
   bookmarks.yaml: |
     - Links:
         - GitHub:
             - icon: github.png
               href: https://github.com/haziqishere/haziq-homelab
   widgets.yaml: |
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: k3s
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
     - search:
         provider: duckduckgo
         target: _blank
@@ -91,4 +184,5 @@ data:
           dateStyle: long
           timeStyle: short
   docker.yaml: ""
-  kubernetes.yaml: ""
+  kubernetes.yaml: |
+    mode: cluster

@@ -82,7 +82,6 @@ MacBook (write manifests + run bootstrap)
 | kubeflow-pipelines | kubeflow | `platform/kubeflow/kubeflow-pipeline` |
 | spark-operator | spark | `platform/spark-operator` |
 | prefect | prefect | `platform/prefect` |
-| vault | vault | `platform/vault` |
 | nas (nfs-server) | nas | `workload/nas` |
 | minecraft | minecraft | `workload/minecraft` |
 | jellyfin | jellyfin | `workload/jellyfin` |
@@ -112,8 +111,7 @@ haziq-homelab/
 ├── platform/                   # Data/ML platform operators
 │   ├── kubeflow/
 │   ├── prefect/
-│   ├── spark-operator/
-│   └── vault/
+│   └── spark-operator/
 │
 ├── workload/                   # Application workloads
 │   ├── filebrowser/
@@ -162,7 +160,6 @@ bash bootstrap/apply-secrets.sh
 - [x] Kubeflow Pipelines (lightweight install)
 - [x] Spark Operator
 - [x] Prefect (self-hosted)
-- [x] Vault
 
 ### Phase 3 — Media & Personal Workloads
 - [x] Minecraft (public via Cloudflare Tunnel)
@@ -189,6 +186,7 @@ All secrets are managed as Kubernetes Secrets, **never committed to git**.
 |--------|-----|
 | AWS IAM credentials | `kubectl create secret generic aws-creds --from-literal=...` |
 | Cloudflare Tunnel token | `kubectl create secret generic cloudflare-token --from-literal=...` |
+| Homepage widget keys | `kubectl -n homepage create secret generic homepage-secrets --from-literal=HOMEPAGE_VAR_JELLYFIN_KEY=... --from-literal=HOMEPAGE_VAR_PIHOLE_KEY=...` |
 | ArgoCD admin password | Auto-generated on install |
 | ghcr.io pull secret | `kubectl create secret docker-registry ghcr-secret ...` |
 
