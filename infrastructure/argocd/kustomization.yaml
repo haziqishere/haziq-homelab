@@ -10,3 +10,9 @@ patches:
   - path: repo-server-patch.yaml
   - path: crds-patch.yaml
   - path: argocd-server-patch.yaml
+  - path: master-node-patch.yaml
+    target:
+      kind: Deployment
+  - path: master-node-patch.yaml
+    target:
+      kind: StatefulSet

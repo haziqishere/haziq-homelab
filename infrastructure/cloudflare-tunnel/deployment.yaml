@@ -13,6 +13,11 @@ spec:
       labels:
         app: cloudflared
     spec:
+      nodeSelector:
+        homelab.io/role: master
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
       containers:
         - name: cloudflared
           image: cloudflare/cloudflared:latest

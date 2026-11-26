@@ -1,0 +1,14 @@
+# Pin all ArgoCD components to the dedicated master node (optiplex).
+# Master is tainted CriticalAddonsOnly=true:NoExecute via k3s config.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: not-used # name ignored, kustomize patch target selects resources
+spec:
+  template:
+    spec:
+      nodeSelector:
+        homelab.io/role: master
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists

@@ -23,7 +23,10 @@ spec:
             memory: 512Mi
     grafana:
       nodeSelector:
-        kubernetes.io/hostname: raspberrypi
+        homelab.io/role: master
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
       persistence:
         enabled: false
     alertmanager:
