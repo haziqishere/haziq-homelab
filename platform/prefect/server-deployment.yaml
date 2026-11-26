@@ -1,5 +1,5 @@
 ## Prefect server, installed via the official prefect-server Helm chart
-## through k3s' built-in helm-controller (see platform/vault/helmchart.yaml for
+## through k3s' built-in helm-controller (see infrastructure/nfs-csi/helmchart.yaml for
 ## the same pattern). Namespace + Service naming (prefect-server:4200) are kept
 ## identical to the previous plain-Deployment manifest, so ingress.yaml and
 ## worker-deployment.yaml need no changes.
