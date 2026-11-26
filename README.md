@@ -55,6 +55,7 @@ MacBook (write manifests + run bootstrap)
 
 | Service | External | Internal |
 |---------|----------|----------|
+| Homepage (landing page) | `https://www.haziqhakimi.online` (Cloudflare Tunnel) | Traefik ingress |
 | Jellyfin | `https://jellyfin.haziqhakimi.online` (Cloudflare Tunnel) | Traefik ingress `/jellyfin` |
 | Immich | `https://immich.haziqhakimi.online` (Cloudflare Tunnel) | NodePort `:30283` |
 | ArgoCD | — | Tailscale only |

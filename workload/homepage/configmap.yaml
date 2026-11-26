@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage-config
+  namespace: homepage
+data:
+  # PUBLIC page (www.haziqhakimi.online via Cloudflare Tunnel, no auth).
+  # Do NOT add service widgets that need API keys/passwords - homepage proxies
+  # them server-side, so anyone hitting the page gets that widget's data.
+  settings.yaml: |
+    title: Haziq's Homelab
+    description: Self-hosted services running on k3s
+    theme: dark
+    color: slate
+    headerStyle: clean
+    hideVersion: true
+    layout:
+      Apps:
+        style: row
+        columns: 4
+      Monitoring:
+        style: row
+        columns: 4
+      Games:
+        style: row
+        columns: 4
+  services.yaml: |
+    - Apps:
+        - Immich:
+            icon: immich.png
+            href: https://immich.haziqhakimi.online
+            description: Photos
+            siteMonitor: http://immich-server.immich.svc.cluster.local:2283
+        - Jellyfin:
+            icon: jellyfin.png
+            href: https://jellyfin.haziqhakimi.online
+            description: Media streaming
+            siteMonitor: http://jellyfin.jellyfin.svc.cluster.local:8096
+        - Komga:
+            icon: komga.png
+            href: https://komga.haziqhakimi.online
+            description: Comics & manga
+            siteMonitor: http://komga.komga.svc.cluster.local:25600
+        - Filebrowser:
+            icon: filebrowser.png
+            href: https://filebrowser.haziqhakimi.online
+            description: Files
+            siteMonitor: http://filebrowser.common.svc.cluster.local:80
+        - Stirling PDF:
+            icon: stirling-pdf.png
+            href: https://stirling-pdf.haziqhakimi.online
+            description: PDF tools
+            siteMonitor: http://stirling-pdf.common.svc.cluster.local:8080
+        - Excalidash:
+            icon: excalidraw.png
+            href: https://excalidash.haziqhakimi.online
+            description: Whiteboard
+            siteMonitor: http://frontend.excalidash.svc.cluster.local:80
+    - Monitoring:
+        - Uptime Kuma:
+            icon: uptime-kuma.png
+            href: https://kuma.haziqhakimi.online
+            description: Service uptime
+            siteMonitor: http://uptime-kuma.uptime-kuma.svc.cluster.local:3001
+        - Grafana:
+            icon: grafana.png
+            href: https://grafana.haziqhakimi.online
+            description: Metrics dashboards
+            siteMonitor: http://kube-prometheus-stack-grafana.observability.svc.cluster.local:80
+    - Games:
+        - Kroni SMP:
+            icon: minecraft.png
+            description: minecraft.haziqhakimi.online
+            widget:
+              # server list ping only - no RCON/credentials involved
+              type: minecraft
+              url: udp://minecraft-service.minecraft.svc.cluster.local:25565
+              fields: ["status", "players", "version"]
+  bookmarks.yaml: |
+    - Links:
+        - GitHub:
+            - icon: github.png
+              href: https://github.com/haziqishere/haziq-homelab
+  widgets.yaml: |
+    - search:
+        provider: duckduckgo
+        target: _blank
+    - datetime:
+        text_size: md
+        format:
+          dateStyle: long
+          timeStyle: short
+  docker.yaml: ""
+  kubernetes.yaml: ""
