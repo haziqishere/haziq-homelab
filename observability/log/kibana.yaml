@@ -29,10 +29,16 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 10m
+              cpu: 15m
             limits:
+              cpu: 20m
               memory: 1Gi
-              cpu: 50m
+          startupProbe:
+            httpGet:
+              path: /api/status
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30 # allow up to 5 min to boot
           readinessProbe:
             httpGet:
               path: /api/status
