@@ -5,7 +5,7 @@ metadata:
   name: prefect-postgresql
   namespace: prefect
 spec:
-  replicas: 1
+  replicas: 0 # PAUSED 2026-11-27 (homelab thermal throttling), was 1
   selector:
     matchLabels:
       app: prefect-postgresql

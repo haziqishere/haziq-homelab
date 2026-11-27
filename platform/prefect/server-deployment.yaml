@@ -18,8 +18,8 @@ spec:
     fullnameOverride: prefect-server
 
     server:
-      # -- api server replicas, tune as needed (1 is plenty for a homelab)
-      replicaCount: 1
+      # -- api server replicas. PAUSED 2026-11-27 (homelab thermal throttling), was 1
+      replicaCount: 0
       uiConfig:
         prefectUiApiUrl: "http://prefect.haziqhakimi.online/api"
 
@@ -30,7 +30,8 @@ spec:
       # -- background-services replicas, tune as needed. NOTE: a `helm upgrade`
       # (i.e. any change to this HelmChart's spec) resets the Deployment back
       # to this value, temporarily overriding whatever the HPA below scaled to.
-      replicaCount: 1
+      # PAUSED 2026-11-27 (homelab thermal throttling), was 1
+      replicaCount: 0
       messaging:
         redis:
           # points at platform/prefect/redis.yaml instead of the chart's

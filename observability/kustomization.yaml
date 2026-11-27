@@ -3,4 +3,7 @@ kind: Kustomization
 
 resources:
   - cluster
-  - log
+  # PAUSED 2026-11-27: haziq-homelab thermal throttling (92C). EFK logging
+  # (elasticsearch/kibana/fluent-bit) removed to cut CPU. Logs are not persisted
+  # (persistence: false), so nothing is lost. Uncomment to restore.
+  # - log
