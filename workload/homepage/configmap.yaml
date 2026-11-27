@@ -97,6 +97,26 @@ data:
               # and is lost on restart.
               key: "{{HOMEPAGE_VAR_PIHOLE_KEY}}"
               fields: ["queries", "blocked", "blocked_percent", "gravity"]
+        - Node Temps:
+            icon: mdi-thermometer
+            description: CPU package temperature per node
+            # customapi (fixed URL) instead of the prometheusmetric widget: that
+            # widget takes the PromQL from the browser, so any visitor could run
+            # arbitrary queries against Prometheus. Query is URL-encoded so
+            # homepage doesn't treat the {...} label matchers as placeholders.
+            # Readable form:
+            #   sort_desc(round((max by (instance) (node_hwmon_temp_celsius{chip="platform_coretemp_0"}) or max by (instance) (node_thermal_zone_temp{type="cpu-thermal"})) * on (instance) group_left (nodename) node_uname_info))
+            widget:
+              type: customapi
+              url: "http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090/api/v1/query?query=sort_desc%28round%28%28max%20by%20%28instance%29%20%28node_hwmon_temp_celsius%7Bchip%3D%22platform_coretemp_0%22%7D%29%20or%20max%20by%20%28instance%29%20%28node_thermal_zone_temp%7Btype%3D%22cpu-thermal%22%7D%29%29%20%2A%20on%20%28instance%29%20group_left%20%28nodename%29%20node_uname_info%29%29"
+              method: GET
+              refreshInterval: 30000
+              display: dynamic-list
+              mappings:
+                items: data.result
+                name: metric.nodename
+                label: value.1
+                suffix: "°C"
     - Games:
         - Kroni SMP:
             icon: minecraft.png

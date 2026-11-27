@@ -16,7 +16,7 @@ spec:
         app: homepage
       annotations:
         # bump to force a rollout after editing configmap.yaml
-        homepage.io/config-rev: "3"
+        homepage.io/config-rev: "4"
     spec:
       serviceAccountName: homepage
       automountServiceAccountToken: true # kubernetes widget reads node metrics
