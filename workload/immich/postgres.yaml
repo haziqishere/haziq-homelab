@@ -66,6 +66,10 @@ spec:
               command: ["pg_isready", "-U", "immich", "-d", "immich"]
             initialDelaySeconds: 30
             periodSeconds: 10
+            # default 1s timeout killed postgres in a loop whenever the node was
+            # CPU-saturated (2026-11-27 outage); give it room before restarting
+            timeoutSeconds: 5
+            failureThreshold: 6
       volumes:
         - name: data
           persistentVolumeClaim:
